@@ -18,4 +18,14 @@ public class CurrencyConverter {
 
         return result;
     }
+
+    public BigDecimal convertFrom(Currency currency, BigDecimal amount) {
+        BigDecimal halfSpread = exchangeRateTable.getSpread(currency)
+                .divide(new BigDecimal("2"), 2, RoundingMode.HALF_UP);
+        BigDecimal exchangeRate = exchangeRateTable.getReferenceRate(currency)
+                .subtract(halfSpread);
+        BigDecimal result = amount.multiply(exchangeRate).setScale(2, RoundingMode.HALF_UP);
+
+        return result;
+    }
 }
