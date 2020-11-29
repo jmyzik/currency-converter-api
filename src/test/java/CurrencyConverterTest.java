@@ -1,3 +1,4 @@
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -8,22 +9,24 @@ import static org.mockito.Mockito.*;
 
 class CurrencyConverterTest {
 
+    private static final Currency USD = Currency.getInstance("USD");
+    private CurrencyConverter converter;
+
+    @BeforeEach
+    void setUp() {
+        ExchangeRateTable table = mock(ExchangeRateTable.class);
+        when(table.getReferenceRate(USD)).thenReturn( new BigDecimal("4.2134"));
+        when(table.getSpread(USD)).thenReturn(new BigDecimal("0.42"));
+
+        converter = new CurrencyConverter(table);
+    }
+
     @Test
     void shouldConvertFromReferenceCurrencyToAnotherCurrency() {
-        Currency currency = Currency.getInstance("USD");
-        BigDecimal referenceRate = new BigDecimal("4.2134");
-        BigDecimal spread = new BigDecimal("0.42");
         BigDecimal amount = new BigDecimal("100.00");
-
-        ExchangeRateTable table = mock(ExchangeRateTable.class);
-        when(table.getReferenceRate(currency)).thenReturn(referenceRate);
-        when(table.getSpread(currency)).thenReturn(spread);
-
-        CurrencyConverter converter = new CurrencyConverter(table);
 
         BigDecimal expectedValue = new BigDecimal("22.61");
 
-        assertEquals(expectedValue, converter.convertTo(currency, amount));
+        assertEquals(expectedValue, converter.convertTo(USD, amount));
     }
-
 }
