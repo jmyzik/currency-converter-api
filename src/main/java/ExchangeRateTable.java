@@ -59,12 +59,18 @@ public class ExchangeRateTable {
         if (currency.equals(referenceCurrency)) {
             throw new IllegalArgumentException("Setting reference rate for the reference currency is not allowed.");
         }
+        if (rate <= 0) {
+            throw new IllegalArgumentException("The reference rate must be greater than zero!");
+        }
         referenceRates.put(currency, new BigDecimal(rate).setScale(REFERENCE_RATE_SCALE, ROUNDING_MODE));
     }
 
     public void setSpread(Currency currency, double spread) {
         if (currency.equals(referenceCurrency)) {
             throw new IllegalArgumentException("Setting spread for the reference currency is not allowed.");
+        }
+        if (spread <= 0) {
+            throw new IllegalArgumentException("The spread must be greater than zero!");
         }
         spreads.put(currency, new BigDecimal(spread).setScale(DEFAULT_SCALE, ROUNDING_MODE));
     }

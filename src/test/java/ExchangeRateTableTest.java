@@ -110,4 +110,21 @@ class ExchangeRateTableTest {
         assertEquals("Setting spread for the reference currency is not allowed.", e.getMessage());
     }
 
+    @Test
+    void shouldThrowExceptionOnNonPositiveReferenceRateArgument() {
+        Exception e = assertThrows(
+                IllegalArgumentException.class,
+                () -> table.setReferenceRate(Currency.getInstance("EUR"), -3.2389)
+        );
+        assertEquals("The reference rate must be greater than zero!", e.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionOnNonPositiveSpreadArgument() {
+        Exception e = assertThrows(
+                IllegalArgumentException.class,
+                () -> table.setSpread(Currency.getInstance("USD"), 0)
+        );
+        assertEquals("The spread must be greater than zero!", e.getMessage());
+    }
 }
