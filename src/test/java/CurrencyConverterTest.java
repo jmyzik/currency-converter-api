@@ -1,5 +1,7 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.math.BigDecimal;
 import java.util.Currency;
@@ -24,11 +26,18 @@ class CurrencyConverterTest {
         converter = new CurrencyConverter(table);
     }
 
-    @Test
-    void shouldConvertFromReferenceCurrencyToAnotherCurrency() {
-        BigDecimal amount = new BigDecimal("100.00");
-
-        BigDecimal expectedValue = new BigDecimal("22.61");
+    @ParameterizedTest
+    @CsvSource({"0, 0.00",
+                "0.01, 0.00",
+                "1, 0.23",
+                "13.03, 2.95",
+                "25.17, 5.69",
+                "100.00, 22.61",
+                "123000, 27806.66",
+                "35000000000, 7912465524.26"})
+    void shouldConvertFromReferenceCurrencyToAnotherCurrency(String input, String expected) {
+        BigDecimal amount = new BigDecimal(input);
+        BigDecimal expectedValue = new BigDecimal(expected);
 
         assertEquals(expectedValue, converter.convertTo(USD, amount));
     }
