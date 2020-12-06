@@ -1,5 +1,4 @@
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -42,11 +41,18 @@ class CurrencyConverterTest {
         assertEquals(expectedValue, converter.convertTo(USD, amount));
     }
 
-    @Test
-    void shouldConvertToReferenceCurrencyFromAnotherCurrency() {
-        BigDecimal amount = new BigDecimal("80.00");
-
-        BigDecimal expectedValue = new BigDecimal("344.10");
+    @ParameterizedTest
+    @CsvSource({"0, 0.00",
+                "0.01, 0.04",
+                "1, 4.30",
+                "15.2, 65.38",
+                "77.77, 334.51",
+                "150, 645.20",
+                "123000, 529059.90",
+                "35000000000, 150545500000.00"})
+    void shouldConvertToReferenceCurrencyFromAnotherCurrency(String input, String expected) {
+        BigDecimal amount = new BigDecimal(input);
+        BigDecimal expectedValue = new BigDecimal(expected);
 
         assertEquals(expectedValue, converter.convertFrom(EUR, amount));
     }
