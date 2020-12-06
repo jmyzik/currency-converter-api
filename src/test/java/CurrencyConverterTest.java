@@ -56,4 +56,20 @@ class CurrencyConverterTest {
 
         assertEquals(expectedValue, converter.convertFrom(EUR, amount));
     }
+
+    @ParameterizedTest
+    @CsvSource({"0, 0.00",
+                "0.01, 0.01",
+                "1, 0.97",
+                "15.37, 14.95",
+                "99.99, 97.23",
+                "250, 243.10",
+                "123000, 119604.81",
+                "35000000000, 34033887959.49"})
+    void shouldConvertBetweenEURAndUSD(String amountInEUR, String expectedAmountInUSD) {
+        BigDecimal input = new BigDecimal(amountInEUR);
+        BigDecimal expected = new BigDecimal(expectedAmountInUSD);
+
+        assertEquals(expected, converter.convertBetween(EUR, USD, input));
+    }
 }

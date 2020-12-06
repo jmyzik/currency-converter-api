@@ -28,4 +28,11 @@ public class CurrencyConverter {
 
         return result;
     }
+
+    public BigDecimal convertBetween(Currency originalCurrency, Currency targetCurrency, BigDecimal amount) {
+        BigDecimal referenceCurrencyAmount = convertFrom(originalCurrency, amount);
+        BigDecimal result = convertTo(targetCurrency, referenceCurrencyAmount);
+
+        return result;
+    }
 }
