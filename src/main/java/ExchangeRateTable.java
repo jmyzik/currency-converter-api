@@ -1,5 +1,14 @@
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,5 +82,43 @@ public class ExchangeRateTable {
             throw new IllegalArgumentException("The spread must be greater than zero!");
         }
         spreads.put(currency, new BigDecimal(spread).setScale(DEFAULT_SCALE, ROUNDING_MODE));
+    }
+
+    public void downloadRates() {
+        String APIKey = "a785e31e967aa583fe71093d0527b6ff";
+        String myURLString = "http://data.fixer.io/api/latest?access_key=" + APIKey;
+        URL myURL;
+
+        try {
+            myURL = new URL(myURLString);
+        } catch (MalformedURLException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        try (Reader reader = new InputStreamReader(myURL.openStream())) {
+            Object object = new JSONParser().parse(reader);
+            JSONObject jsonObject = (JSONObject) object;
+            Map rates = (Map) jsonObject.get("rates");
+
+            BigDecimal referenceCurrencyRate = extractRateAsBigDecimal(rates, referenceCurrency);
+
+            for (Currency currency : referenceRates.keySet()) {
+                BigDecimal extractedRate = extractRateAsBigDecimal(rates, currency);
+                BigDecimal convertedRate = BigDecimal.ONE
+                        .divide(extractedRate, extractedRate.scale(), ROUNDING_MODE)
+                        .multiply(referenceCurrencyRate)
+                        .setScale(REFERENCE_RATE_SCALE, ROUNDING_MODE);
+                referenceRates.put(currency, convertedRate);
+            }
+        } catch (IOException | ParseException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private BigDecimal extractRateAsBigDecimal(Map rates, Currency currency) {
+        Number rateAsNumber = (Number) rates.get(currency.toString());
+        String rateAsString = rateAsNumber.toString();
+        return new BigDecimal(rateAsString);
     }
 }
