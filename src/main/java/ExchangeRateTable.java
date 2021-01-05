@@ -50,6 +50,16 @@ public class ExchangeRateTable {
         return referenceRates.get(currency);
     }
 
+    public BigDecimal getReferenceRate(String currency) {
+        try {
+            return getReferenceRate(Currency.getInstance(currency));
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(
+                    String.format("Currency %s has not been recognized!", currency)
+            );
+        }
+    }
+
     public BigDecimal getSpread(Currency currency) {
         if (currency.equals(referenceCurrency)) {
             throw new IllegalArgumentException(String.format(
@@ -64,6 +74,16 @@ public class ExchangeRateTable {
         return spreads.get(currency);
     }
 
+    public BigDecimal getSpread(String currency) {
+        try {
+            return getSpread(Currency.getInstance(currency));
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(
+                    String.format("Currency %s has not been recognized!", currency)
+            );
+        }
+    }
+
     public void setReferenceRate(Currency currency, double rate) {
         if (currency.equals(referenceCurrency)) {
             throw new IllegalArgumentException("Setting reference rate for the reference currency is not allowed.");
@@ -74,6 +94,16 @@ public class ExchangeRateTable {
         referenceRates.put(currency, new BigDecimal(rate).setScale(REFERENCE_RATE_SCALE, ROUNDING_MODE));
     }
 
+    public void setReferenceRate(String currency, double rate) {
+        try {
+            setReferenceRate(Currency.getInstance(currency), rate);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(
+                    String.format("Currency %s has not been recognized!", currency)
+            );
+        }
+    }
+
     public void setSpread(Currency currency, double spread) {
         if (currency.equals(referenceCurrency)) {
             throw new IllegalArgumentException("Setting spread for the reference currency is not allowed.");
@@ -82,6 +112,16 @@ public class ExchangeRateTable {
             throw new IllegalArgumentException("The spread must be greater than zero!");
         }
         spreads.put(currency, new BigDecimal(spread).setScale(DEFAULT_SCALE, ROUNDING_MODE));
+    }
+
+    public void setSpread(String currency, double rate) {
+        try {
+            setSpread(Currency.getInstance(currency), rate);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(
+                    String.format("Currency %s has not been recognized!", currency)
+            );
+        }
     }
 
     public void downloadRates() {

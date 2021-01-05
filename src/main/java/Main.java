@@ -1,6 +1,4 @@
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Currency;
 
 public class Main {
     public static void main(String[] args) {
@@ -8,11 +6,8 @@ public class Main {
         CurrencyConverter converter = new CurrencyConverter(table);
 
         table.downloadRates();
-        System.out.printf("1 USD equals %s PLN%n", table.getReferenceRate(Currency.getInstance("USD")).toString());
-        System.out.printf("1 EUR equals %s PLN%n", table.getReferenceRate(Currency.getInstance("EUR")).toString());
-
-//                converter.convertFrom(Currency.getInstance("USD"), BigDecimal.ONE).toString());
-//        System.out.printf("1 EUR equals %s PLN%n",
-//                converter.convertFrom(Currency.getInstance("EUR"), BigDecimal.ONE).toString());
+        System.out.printf("1 USD equals %s PLN%n", table.getReferenceRate("USD"));
+        System.out.printf("1 EUR equals %s PLN%n", table.getReferenceRate("EUR"));
+        System.out.printf("15.7 EUR equals %s USD%n", converter.convertBetween("EUR", "USD", new BigDecimal("15.7")));
     }
 }
