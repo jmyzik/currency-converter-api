@@ -41,12 +41,8 @@ class ExchangeRateTableTest {
     }
 
     @Test
-    void shouldThrowExceptionOnAttemptToGetReferenceRateForReferenceCurrency() {
-        Exception e = assertThrows(
-                IllegalArgumentException.class,
-                () -> table.getReferenceRate(table.getReferenceCurrency())
-        );
-        assertEquals("Currency PLN is the reference currency, no reference rate available.", e.getMessage());
+    void shouldReturnOneAsReferenceRateForReferenceCurrency() {
+        assertEquals(BigDecimal.ONE, table.getReferenceRate(table.getReferenceCurrency()));
     }
 
     @Test
@@ -59,12 +55,8 @@ class ExchangeRateTableTest {
     }
 
     @Test
-    void shouldThrowExceptionOnAttemptToGetSpreadForReferenceCurrency() {
-        Exception e = assertThrows(
-                IllegalArgumentException.class,
-                () -> table.getSpread(table.getReferenceCurrency())
-        );
-        assertEquals("Currency PLN is the reference currency, no spread available.", e.getMessage());
+    void shouldReturnZeroAsSpreadForReferenceCurrency() {
+        assertEquals(BigDecimal.ZERO, table.getSpread(table.getReferenceCurrency()));
     }
 
     @Test
@@ -120,11 +112,11 @@ class ExchangeRateTableTest {
     }
 
     @Test
-    void shouldThrowExceptionOnNonPositiveSpreadArgument() {
+    void shouldThrowExceptionOnNegativeSpreadArgument() {
         Exception e = assertThrows(
                 IllegalArgumentException.class,
-                () -> table.setSpread(Currency.getInstance("USD"), 0)
+                () -> table.setSpread(Currency.getInstance("USD"), -0.52)
         );
-        assertEquals("The spread must be greater than zero!", e.getMessage());
+        assertEquals("The spread must not be less than zero!", e.getMessage());
     }
 }
