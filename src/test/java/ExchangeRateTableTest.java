@@ -8,7 +8,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ExchangeRateTableTest {
 
-    private ExchangeRateTable table;
+    static final Currency PLN = Currency.getInstance("PLN");
+    static final Currency EUR = Currency.getInstance("EUR");
+    static final Currency USD = Currency.getInstance("USD");
+    ExchangeRateTable table;
 
     @BeforeEach
     void setUp() {
@@ -17,27 +20,27 @@ class ExchangeRateTableTest {
 
     @Test
     void PLNShouldBeReferenceCurrencyInNewTable() {
-        assertEquals(Currency.getInstance("PLN"), table.getReferenceCurrency());
+        assertEquals(PLN, table.getReferenceCurrency());
     }
 
     @Test
     void USDShouldBePresentWithReferenceRateOfNull() {
-        assertNull(table.getReferenceRate(Currency.getInstance("USD")));
+        assertNull(table.getReferenceRate(USD));
     }
 
     @Test
     void EURShouldBePresentWithReferenceRateOfNull() {
-        assertNull(table.getReferenceRate(Currency.getInstance("EUR")));
+        assertNull(table.getReferenceRate(EUR));
     }
 
     @Test
     void spreadForUSDShouldBeZero() {
-        assertEquals(BigDecimal.ZERO, table.getSpread(Currency.getInstance("USD")));
+        assertEquals(BigDecimal.ZERO, table.getSpread(USD));
     }
 
     @Test
     void spreadForEURShouldBeZero() {
-        assertEquals(BigDecimal.ZERO, table.getSpread(Currency.getInstance("EUR")));
+        assertEquals(BigDecimal.ZERO, table.getSpread(EUR));
     }
 
     @Test
@@ -70,18 +73,18 @@ class ExchangeRateTableTest {
 
     @Test
     void shouldSetReferenceRateForExistingCurrency() {
-        table.setReferenceRate(Currency.getInstance("USD"), 4.2);
-        BigDecimal expectedRate = new BigDecimal(4.2).
+        table.setReferenceRate(USD, 4.2);
+        BigDecimal expectedRate = new BigDecimal("4.2").
                 setScale(ExchangeRateTable.REFERENCE_RATE_SCALE, ExchangeRateTable.ROUNDING_MODE);
-        assertEquals(expectedRate, table.getReferenceRate(Currency.getInstance("USD")));
+        assertEquals(expectedRate, table.getReferenceRate(USD));
     }
 
     @Test
     void shouldSetSpreadForExistingCurrency() {
-        table.setSpread(Currency.getInstance("EUR"), 0.49);
-        BigDecimal expectedSpread = new BigDecimal(0.49).
+        table.setSpread(EUR, 0.49);
+        BigDecimal expectedSpread = new BigDecimal("0.49").
                 setScale(ExchangeRateTable.DEFAULT_SCALE, ExchangeRateTable.ROUNDING_MODE);
-        assertEquals(expectedSpread, table.getSpread(Currency.getInstance("EUR")));
+        assertEquals(expectedSpread, table.getSpread(EUR));
     }
 
     @Test
@@ -106,7 +109,7 @@ class ExchangeRateTableTest {
     void shouldThrowExceptionOnNonPositiveReferenceRateArgument() {
         Exception e = assertThrows(
                 IllegalArgumentException.class,
-                () -> table.setReferenceRate(Currency.getInstance("EUR"), -3.2389)
+                () -> table.setReferenceRate(EUR, -3.2389)
         );
         assertEquals("The reference rate must be greater than zero!", e.getMessage());
     }
@@ -115,7 +118,7 @@ class ExchangeRateTableTest {
     void shouldThrowExceptionOnNegativeSpreadArgument() {
         Exception e = assertThrows(
                 IllegalArgumentException.class,
-                () -> table.setSpread(Currency.getInstance("USD"), -0.52)
+                () -> table.setSpread(USD, -0.52)
         );
         assertEquals("The spread must not be less than zero!", e.getMessage());
     }
