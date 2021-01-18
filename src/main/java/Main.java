@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Currency;
 
@@ -10,7 +11,12 @@ public class Main {
         ExchangeRateTable table = new ExchangeRateTable();
         CurrencyConverter converter = new CurrencyConverter(table);
 
-        table.downloadRates();
+        try {
+            table.downloadRates();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
 //        table.setSpread("USD", 0.32);
 //        table.setSpread("EUR", 0.44);
         System.out.printf("1 USD equals %s PLN%n", table.getReferenceRate(USD));
