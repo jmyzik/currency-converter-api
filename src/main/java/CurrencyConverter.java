@@ -3,7 +3,7 @@ import java.math.RoundingMode;
 import java.util.Currency;
 
 public class CurrencyConverter {
-    private ExchangeRateTable exchangeRateTable;
+    private final ExchangeRateTable exchangeRateTable;
 
     public CurrencyConverter(ExchangeRateTable exchangeRateTable) {
         this.exchangeRateTable = exchangeRateTable;
