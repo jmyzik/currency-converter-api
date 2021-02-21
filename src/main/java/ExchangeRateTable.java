@@ -1,13 +1,6 @@
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.URL;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +13,7 @@ public class ExchangeRateTable {
     private final Currency referenceCurrency;
     private final Map<Currency, BigDecimal> referenceRates;
     private final Map<Currency, BigDecimal> spreads;
+    private final RatesDownloader downloader;
 
     public ExchangeRateTable() {
         this(Currency.getInstance("PLN"));
@@ -30,7 +24,12 @@ public class ExchangeRateTable {
     }
 
     public ExchangeRateTable(Currency referenceCurrency) {
+        this(referenceCurrency, new FixerRatesDownloader());
+    }
+
+    public ExchangeRateTable(Currency referenceCurrency, RatesDownloader downloader) {
         this.referenceCurrency = referenceCurrency;
+        this.downloader = downloader;
         referenceRates = new HashMap<>();
         spreads = new HashMap<>();
     }
@@ -99,44 +98,6 @@ public class ExchangeRateTable {
     }
 
     public void downloadRates() throws IOException {
-        Map rates;
-
-        try {
-            rates = getRatesMapFromExternalAPI();
-        } catch (IOException | ParseException e) {
-            String message = String.format("Could not obtain rates from the external API (%s).", e.getMessage());
-            throw new IOException(message);
-        }
-
-        BigDecimal referenceCurrencyRate = extractRateAsBigDecimal(rates, referenceCurrency);
-
-        for (Currency currency : referenceRates.keySet()) {
-            BigDecimal extractedRate = extractRateAsBigDecimal(rates, currency);
-            BigDecimal convertedRate = BigDecimal.ONE
-                    .divide(extractedRate, extractedRate.scale(), ROUNDING_MODE)
-                    .multiply(referenceCurrencyRate)
-                    .setScale(REFERENCE_RATE_SCALE, ROUNDING_MODE);
-            referenceRates.put(currency, convertedRate);
-        }
-    }
-
-    private Map getRatesMapFromExternalAPI() throws IOException, ParseException {
-        String APIKey = "a785e31e967aa583fe71093d0527b6ff";
-        String myURLString = "http://data.fixer.io/api/latest?access_key=" + APIKey;
-        URL myURL = new URL(myURLString);
-        Reader reader = new InputStreamReader(myURL.openStream());
-        Object object = new JSONParser().parse(reader);
-        JSONObject jsonObject = (JSONObject) object;
-        Map rates = (Map) jsonObject.get("rates");
-        if (rates == null) {
-            throw new IOException("External rates table unavailable");
-        }
-        return rates;
-    }
-
-    private BigDecimal extractRateAsBigDecimal(Map rates, Currency currency) {
-        Number rateAsNumber = (Number) rates.get(currency.toString());
-        String rateAsString = rateAsNumber.toString();
-        return new BigDecimal(rateAsString);
+        referenceRates.putAll(downloader.downloadRates(referenceCurrency, referenceRates.keySet()));
     }
 }
