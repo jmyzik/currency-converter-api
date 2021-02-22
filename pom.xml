@@ -12,6 +12,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
                 <configuration>
                     <source>11</source>
                     <target>11</target>
@@ -21,6 +22,13 @@
     </build>
 
     <dependencies>
+<!--        Unit tests -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -39,6 +47,8 @@
             <version>3.3.3</version>
             <scope>test</scope>
         </dependency>
+
+<!--        JSON -->
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
